@@ -9,6 +9,8 @@ var config = {
   density: 2,
   dataurl: datasrc,//'/data/vizdata/lookout/lookout_malware.json',
 
+  spacings: 17,
+  textline: 9.5,
 };
 
 function sketch(p) {
@@ -28,10 +30,22 @@ function sketch(p) {
     $(p.externals.canvas).width(g.config.width);
     $(p.externals.canvas).height(g.config.height);
 
-    $.getJSON(config.dataurl, function(newdata) {
-      g.data = workOnData(newdata);
-      console.log(g.data);
-      drawGraph(); 
+    $.ajax(config.dataurl, {dataType:"html"})
+     .done(function(rawdata, textStatus, jqXHR) {
+       var newdata = [];
+       $.each(rawdata.split("\n"),function(k,v) {
+        try {
+         newdata.push(JSON.parse(v));
+        } catch (e) {
+         console.log(e);
+        }
+       });
+       g.data = workOnData(newdata);
+       console.log(g.data);
+       drawGraph(); 
+     })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+     console.log("data req failed");
     });
     $("#download").click(function() {
       p.save();
@@ -66,6 +80,7 @@ function sketch(p) {
     //p.line(0, h*0.8, w, h*0.8);
     p.strokeWeight(1);
 
+    drawForeground();
     for (var i=0; i<g.data.events.length; i++) {
       var item = g.data.events[i];
       var percent = (item.time-g.data.start)/(g.data.length);
@@ -101,10 +116,9 @@ function sketch(p) {
   }
 
 
-  var spacings = 17;
 
   function drawPermissionLines() {
-    var blocksize = h/spacings;
+    var blocksize = h/g.config.spacings;
 
     p.textFont(g.font, 12);
     for (i in permissions) {
@@ -121,12 +135,33 @@ function sketch(p) {
     }
   }
 
+  function drawForeground() {
+    var permissionStack = [];
+    for (var i=0; i<g.data.events.length; i++) {
+      var item = g.data.events[i];
+      var percent = (item.time-g.data.start)/(g.data.length);
+      var item_x = percent * w;
+      if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
+       permissionStack.push({item: item, x:item_x});
+      } if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
+       var todraw = permissionStack.pop();
+        p.pushStyle();
+        p.noStroke();
+        p.fill(255,200,150,20);
+        p.rectMode(p.CORNERS);
+        p.rect(todraw.x, 0, item_x, h);
+
+        p.popStyle();
+      }
+    }
+  }
+
   function drawListItem(item) {
     if (item.resultOfCheck == -1) return;
     if (permissions[item.permission]) {
       var permission = permissions[item.permission];
       var blockwidth = 0;
-      var blocksize = h/spacings;
+      var blocksize = h/g.config.spacings;
       var blockheight = blocksize;
       if (permission.category == "info-l") {
         p.fill( 245, 184, 0, 84);
@@ -167,7 +202,7 @@ function sketch(p) {
       p.arc(0, 11, 13, 13, -p.HALF_PI-p.HALF_PI/2, -p.HALF_PI/2, p.OPEN);
       p.arc(0, 11, 8, 8, -p.HALF_PI-p.HALF_PI/2, -p.HALF_PI/2, p.OPEN);
       p.arc(0, 11, 3, 3, -p.HALF_PI-p.HALF_PI/2, -p.HALF_PI/2, p.OPEN);
-    } else if (item.permission == "android.activity.ACTION") {
+    } else if (item.permission.indexOf("android.activity.ACTION") != -1) {
       if (item.message == "init") {
         p.stroke(0,150,0,150);
         p.stroke(0,84);
@@ -187,11 +222,12 @@ function sketch(p) {
   var lastinternet = 0;
   function drawListText(item) {
     if (item.resultOfCheck == -1) return;
+    var blockwidth = 0;
+    var blocksize = h/g.config.spacings;
+    var blockheight = blocksize;
+    var texttop = blocksize * g.config.textline;
     if (permissions[item.permission]) {
       var permission = permissions[item.permission];
-      var blockwidth = 0;
-      var blocksize = h/spacings;
-      var blockheight = blocksize;
 
       if (permission.displayed == undefined || permission.displayed < item.time - g.data.length/5) {
         p.fill(0);
@@ -204,22 +240,32 @@ function sketch(p) {
         p.rotate(p.HALF_PI);
         p.fill(0);
         p.textFont(g.font, 10);
-        p.textAlign(p.RIGHT);
+        p.textAlign(p.LEFT);
         var out = item.message;
         var maxlen = 60;
         if (out.length > maxlen) {
           out = out.substring(0, maxlen)+"...";
         }
-        p.text(out, h-10, -2);//-11);
+        //p.text(out, h-10, -2);//-11);
+        p.text(out, h-texttop, -2);
       }
       lastinternet = item.time;
-    } else if (item.permission == "android.activity.ACTION") {
+    } else if (item.permission.indexOf("android.activity.ACTION") != -1) {
+     if (item.message == "null") {
+      item.message = "";
+     }
+     if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
+      item.message = "Start: "+item.message;
+     }
+     if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
+      item.message = "Stop: "+item.message;
+     }
       p.rotate(p.HALF_PI);
       p.fill(0);
       p.textFont(g.font, 16);
-      p.textAlign(p.RIGHT);
-      p.text(item.data, h-10, 15);
-      console.log(item.data);
+      p.textAlign(p.LEFT);
+      p.text(item.message, h-texttop, 15);
+      console.log(item.message);
     }
 
 
