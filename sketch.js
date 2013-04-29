@@ -158,11 +158,12 @@ function sketch(p) {
 
   function drawListItem(item) {
     if (item.resultOfCheck == -1) return;
+    var permission = permissions[item.permission];
+    var blockwidth = 0;
+    var blocksize = h/g.config.spacings;
+    var blockheight = blocksize;
+    var texttop = blocksize * g.config.textline;
     if (permissions[item.permission]) {
-      var permission = permissions[item.permission];
-      var blockwidth = 0;
-      var blocksize = h/g.config.spacings;
-      var blockheight = blocksize;
       if (permission.category == "info-l") {
         p.fill( 245, 184, 0, 84);
       } else if (permission.category == "info-m") {
@@ -189,7 +190,9 @@ function sketch(p) {
       p.stroke(0,84);
       p.stroke(17, 170, 221);
       p.strokeWeight(1);
-      p.line(0,13,0,h);
+      p.line(0,13,0,h-texttop-10);
+      p.stroke(7, 170, 221, 100);
+      p.line(0, h-texttop-10,0, h);
       p.noStroke();
       p.stroke(0);
       p.strokeWeight(1);
