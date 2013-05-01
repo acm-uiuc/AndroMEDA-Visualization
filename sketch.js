@@ -75,7 +75,7 @@ function sketch(p) {
      }
     });
     seenarray.sort(function(item1, item2) {
-     return (item1.data.placement > item2.data.placement );
+     return (item1.data.severity > item2.data.severity );
     });
     seenarray.forEach(function(item, index) {
      seenpermissions[item.permission].placement = index+1;
@@ -134,6 +134,7 @@ function sketch(p) {
   var permissions = {
     "android.permission.READ_PHONE_STATE":                   { category: "info-l", severity: 1, placement: 1, display:"Read Phone State"},
     "android.permission.GET_ACCOUNTS":                       { category: "info-l", severity: 1, placement: 2, display:"Get Account Info"},
+    "android.permission.ACCESS_COARSE_LOCATION":             { category: "info-l", severity: 1, placement: 3, display:"Access Fine Location"},
     "android.permission.ACCESS_FINE_LOCATION":               { category: "info-m", severity: 2, placement: 3, display:"Access Fine Location"},
     "android.permission.READ_CONTACTS":                      { category: "info-m", severity: 2, placement: 4, display:"Read Contacts"},
     "android.permission.READ_CALENDAR":                      { category: "info-m", severity: 2, placement: 4, display:"Read Calendar"},
@@ -143,7 +144,10 @@ function sketch(p) {
     "com.android.browser.permission.READ_HISTORY_BOOKMARKS": { category: "info-m", severity: 2, placement: 7, display:"Read Browser History"},
     "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Install Launcher Shortcut"},
     "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS":{ category: "info-h", severity: 3, placement: 9, display:"Write Browser History"},
-//    "android.permission.READ_CALENDAR":                      { category: "info-m", severity: 2, placement: 8, display:"Read Calendar"},
+    "android.permission.WRITE_CONTACTS":                     { category: "info-h", severity: 3, placement: 4, display:"Write Contacts"},
+    "android.permission.WRITE_CALENDAR":                     { category: "info-h", severity: 3, placement: 4, display:"Write Calendar"},
+    "android.permission.WRITE_CALL_LOG":                     { category: "info-h", severity: 3, placement: 5, display:"Write Call Log"},
+    "android.permission.WRITE_SMS":                          { category: "info-h", severity: 3, placement: 6, display:"Write SMS"},
   };
 
   var events = {
