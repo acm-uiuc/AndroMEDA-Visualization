@@ -55,7 +55,8 @@ function sketch(p) {
   function workOnData(data) {
     var olddata = data;
     var data = data.filter(function(item) {
-     if (item.message && item.message.indexOf("ContextImpl") != -1) return false; // considering removing them.
+     if (item.message && item.message.indexOf("ContextImpl") != -1) 
+      return false; // considering removing them.
      if (permissions[item.permission] || events[item.permission])
       return true;
      return false;
