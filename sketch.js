@@ -53,10 +53,34 @@ function sketch(p) {
   };
 
   function workOnData(data) {
+    var data = data.filter(function(item) {
+     if (item.message.indexOf("ContextImpl") != -1) return false; // considering removing them.
+     if (permissions[item.permission] || events[item.permission])
+      return true;
+     return false;
+    });
+    seenpermissions = {};
+    seenarray = [];
+    data.forEach(function(item, index) {
+     if (permissions[item.permission]) {
+      if (!seenpermissions[item.permission]) {
+       seenarray.push({permission:item.permission, data:permissions[item.permission]})
+      }
+      seenpermissions[item.permission] = permissions[item.permission];
+     }
+    });
+    seenarray.sort(function(item1, item2) {
+     return (item1.data.placement > item2.data.placement );
+    });
+    seenarray.forEach(function(item, index) {
+     seenpermissions[item.permission].placement = index+1;
+    });
+
     var newdata = {
         events:data, 
         start:data[0].time, 
-        end:data[data.length-1].time
+        end:data[data.length-1].time,
+        seenpermissions: seenpermissions,
     };
     newdata.length = newdata.end-newdata.start;
     console.log(newdata);
@@ -81,8 +105,7 @@ function sketch(p) {
     p.strokeWeight(1);
 
     drawForeground();
-    for (var i=0; i<g.data.events.length; i++) {
-      var item = g.data.events[i];
+    g.data.events.forEach(function(item) {
       var percent = (item.time-g.data.start)/(g.data.length);
       p.pushMatrix();
       p.pushStyle();
@@ -90,9 +113,8 @@ function sketch(p) {
       drawListItem(item);
       p.popStyle();
       p.popMatrix();
-    }
-    for (var i=0; i<g.data.events.length; i++) {
-      var item = g.data.events[i];
+    });
+    g.data.events.forEach(function(item) {
       var percent = (item.time-g.data.start)/(g.data.length);
       p.pushMatrix();
       p.pushStyle();
@@ -100,28 +122,44 @@ function sketch(p) {
       drawListText(item);
       p.popStyle();
       p.popMatrix();
-    }
+    });
 
   }
 
-  permissions = {
+  var permissions = {
     "android.permission.READ_PHONE_STATE":                   { category: "info-l", severity: 1, placement: 1, display:"Read Phone State"},
     "android.permission.GET_ACCOUNTS":                       { category: "info-l", severity: 1, placement: 2, display:"Get Account Info"},
     "android.permission.ACCESS_FINE_LOCATION":               { category: "info-m", severity: 2, placement: 3, display:"Access Fine Location"},
     "android.permission.READ_CONTACTS":                      { category: "info-m", severity: 2, placement: 4, display:"Read Contacts"},
     "android.permission.READ_CALL_LOG":                      { category: "info-m", severity: 2, placement: 5, display:"Read Call Log"},
     "android.permission.READ_SMS":                           { category: "info-m", severity: 2, placement: 6, display:"Read SMS"},
+    "android.permission.GET_TASKS":                          { category: "info-m", severity: 2, placement: 6, display:"Read Running Apps"},
     "com.android.browser.permission.READ_HISTORY_BOOKMARKS": { category: "info-m", severity: 2, placement: 7, display:"Read Browser History"},
+    "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Install Launcher Shortcut"},
+    "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS":{ category: "info-h", severity: 3, placement: 9, display:"Write Browser History"},
 //    "android.permission.READ_CALENDAR":                      { category: "info-m", severity: 2, placement: 8, display:"Read Calendar"},
-  }
+  };
 
+  var events = {
+   "android.activity.ACTION.ACTIVITY_START":     1,
+   "android.activity.ACTION.ACTIVITY_STOP":      1,
+   "android.activity.ACTION.BUTTON_CLICK":       1,
+   "android.activity.ACTION.VIEW_CLICK":         1,
+   "internet.http.client":                       1,
+   "internet.http.url":                          1,
+  };
+
+  var last = {
+   internet: {time: 0, url: ""},
+   activity: {time: 0, message: ""},
+  };
 
 
   function drawPermissionLines() {
     var blocksize = h/g.config.spacings;
 
     p.textFont(g.font, 12);
-    for (i in permissions) {
+    for (i in g.data.seenpermissions) {
       var per = permissions[i];
       var lineh = blocksize * per.placement;
       p.fill(0);
@@ -133,6 +171,11 @@ function sketch(p) {
       }
       //p.line(0, lineh, p.width, lineh);
     }
+
+    var start = new Date(g.data.start);
+    p.fill(0);
+    p.textAlign(p.CENTER);
+    p.text(start.toLocaleString(), 10, h-20, 130, 20);
   }
 
   function drawForeground() {
@@ -144,26 +187,48 @@ function sketch(p) {
       if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
        permissionStack.push({item: item, x:item_x});
       } if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
-       var todraw = permissionStack.pop();
+       if (permissionStack.length == 0) {
+        var todraw = {item: "", x:0};
+       } else {
+        var todraw = permissionStack.pop();
+       }
         p.pushStyle();
         p.noStroke();
-        p.fill(255,200,150,20);
+        if (permissionStack.length == 0) {
+         p.fill(255,200,150,60);
+        } else {
+         p.fill(255,200,150,20);
+        }
         p.rectMode(p.CORNERS);
         p.rect(todraw.x, 0, item_x, h);
 
         p.popStyle();
       }
     }
+    while (permissionStack.length > 0) {
+       var todraw = permissionStack.pop();
+        p.pushStyle();
+        p.noStroke();
+        if (permissionStack.length == 0) {
+         p.fill(255,200,150,60);
+        } else {
+         p.fill(255,200,150,20);
+        }
+        p.rectMode(p.CORNERS);
+        p.rect(todraw.x, 0, w, h);
+        p.popStyle();
+    }
   }
 
   function drawListItem(item) {
-    if (item.resultOfCheck == -1) return;
     var permission = permissions[item.permission];
-    var blockwidth = 0;
+    var blockwidth = 20;
     var blocksize = h/g.config.spacings;
     var blockheight = blocksize;
     var texttop = blocksize * g.config.textline;
+    console.log("Dmissino: "+item.permission);
     if (permissions[item.permission]) {
+      p.noStroke();
       if (permission.category == "info-l") {
         p.fill( 245, 184, 0, 84);
       } else if (permission.category == "info-m") {
@@ -171,17 +236,13 @@ function sketch(p) {
       } else if (permission.category == "info-s") {
         p.fill(210, 100, 80, 100);
       }
-      if (permission.severity == 1) {
-        blockwidth = 20;
-      } else if (permission.severity == 2) {
-        blockwidth = 20;
-      } else if (permission.severity == 3) {
-        blockwidth = 20;
+      if (item.resultOfCheck == -1) {
+        p.noFill();
+        p.stroke(150,150,150,84);
       }
-      console.log("Drawing permissino: "+item.permission);
+      //console.log("Drawing permissino: "+item.permission);
       //p.rect(0, blocksize*permission.placement+15, blockwidth, blockheight-15);
       blockwidth = 15;
-      p.noStroke();
       p.ellipse(0, blocksize*permission.placement, blockwidth, blockwidth);
       p.stroke(0);
       p.ellipse(0, blocksize*permission.placement, 1, 1);
@@ -222,7 +283,6 @@ function sketch(p) {
 
   }
 
-  var lastinternet = 0;
   function drawListText(item) {
     if (item.resultOfCheck == -1) return;
     var blockwidth = 0;
@@ -239,36 +299,54 @@ function sketch(p) {
         permission.displayed = item.time;
       }
     } else if (item.permission == "internet.http.url" || item.permission == "internet.http.client") {
-      if (lastinternet < item.time - 1000) {
-        p.rotate(p.HALF_PI);
+      if (last.internet.time < item.time - 1000) {
+        p.rotate(-p.HALF_PI);
         p.fill(0);
         p.textFont(g.font, 10);
         p.textAlign(p.LEFT);
         var out = item.message;
-        var maxlen = 60;
+        var maxlen = 55;
         if (out.length > maxlen) {
           out = out.substring(0, maxlen)+"...";
         }
         //p.text(out, h-10, -2);//-11);
-        p.text(out, h-texttop, -2);
+        //p.text(out, -h+2, 9);
       }
-      lastinternet = item.time;
+      last.internet.time = item.time;
+      last.internet.url = item.message;
     } else if (item.permission.indexOf("android.activity.ACTION") != -1) {
-     if (item.message == "null") {
-      item.message = "";
-     }
-     if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
-      item.message = "Start: "+item.message;
-     }
-     if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
-      item.message = "Stop: "+item.message;
-     }
-      p.rotate(p.HALF_PI);
-      p.fill(0);
-      p.textFont(g.font, 16);
-      p.textAlign(p.LEFT);
-      p.text(item.message, h-texttop, 15);
-      console.log(item.message);
+      var otherside = false;
+      if (item.message == "null") {
+       item.message = "Activity";
+      }
+      if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
+       item.message = "Start: "+item.message;
+       otherside = true;
+      }
+      if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
+       item.message = "Stop: "+item.message;
+      }
+      if (item.permission == "android.activity.ACTION.BUTTON_CLICK") {
+       item.message = "Click: "+item.message;
+      }
+      if (item.permission == "android.activity.ACTION.VIEW_CLICK") {
+       item.message = "Click: Button";
+      }
+      if (last.activity.time < item.time - 1000 && last.activity.message == item.message) {
+        //skip it.
+      } else {
+        p.rotate(-p.HALF_PI);
+        p.fill(0);
+        p.textFont(g.font, 16);
+        p.textAlign(p.LEFT);
+        if (otherside) {
+          p.text(item.message, -h+2, 14);
+        } else {
+          p.text(item.message, -h+2, -3);
+        }
+        console.log(item.message);
+        last.activity = {time: item.time, message:item.message};
+      }
     }
 
 
@@ -276,6 +354,7 @@ function sketch(p) {
   }
 
 }
+var wherex = 0;
 
 console.log("Starting");
 $(function() {
