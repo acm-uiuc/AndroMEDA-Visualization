@@ -134,7 +134,8 @@ function sketch(p) {
   var permissions = {
     "android.permission.READ_PHONE_STATE":                   { category: "info-l", severity: 1, placement: 1, display:"Read Phone State"},
     "android.permission.GET_ACCOUNTS":                       { category: "info-l", severity: 1, placement: 2, display:"Get Account Info"},
-    "android.permission.ACCESS_COARSE_LOCATION":             { category: "info-l", severity: 1, placement: 3, display:"Access Fine Location"},
+    "android.permission.ACCESS_COARSE_LOCATION":             { category: "info-l", severity: 1, placement: 3, display:"Access Coarse Location"},
+    "android.permission.RECEIVE_BOOT_COMPLETED":             { category: "info-l", severity: 1, placement: 3, display:"Start on Boot"},
     "android.permission.ACCESS_FINE_LOCATION":               { category: "info-m", severity: 2, placement: 3, display:"Access Fine Location"},
     "android.permission.READ_CONTACTS":                      { category: "info-m", severity: 2, placement: 4, display:"Read Contacts"},
     "android.permission.READ_CALENDAR":                      { category: "info-m", severity: 2, placement: 4, display:"Read Calendar"},
