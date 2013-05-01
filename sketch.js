@@ -152,6 +152,7 @@ function sketch(p) {
   var last = {
    internet: {time: 0, url: ""},
    activity: {time: 0, message: ""},
+   start: "",
   };
 
 
@@ -310,7 +311,7 @@ function sketch(p) {
           out = out.substring(0, maxlen)+"...";
         }
         //p.text(out, h-10, -2);//-11);
-        //p.text(out, -h+2, 9);
+        p.text(out, -h+2, 9);
       }
       last.internet.time = item.time;
       last.internet.url = item.message;
@@ -321,10 +322,16 @@ function sketch(p) {
       }
       if (item.permission == "android.activity.ACTION.ACTIVITY_START") {
        item.message = "Start: "+item.message;
-       otherside = true;
+       if (last.start == item.message) {
+        item.message = "";
+       } else {
+        last.start = item.message;
+       }
       }
       if (item.permission == "android.activity.ACTION.ACTIVITY_STOP") {
        item.message = "Stop: "+item.message;
+       otherside = true;
+       item.message = "";
       }
       if (item.permission == "android.activity.ACTION.BUTTON_CLICK") {
        item.message = "Click: "+item.message;
