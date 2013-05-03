@@ -26,8 +26,8 @@ function sketch(p) {
     g.font = p.createFont("Roboto-Light", 32);
     p.textFont(g.font);
     console.log("Setup");
-    p.size(g.config.width*g.config.density, g.config.height*g.config.density);
-    $(p.externals.canvas).width(g.config.width);
+    p.size(window.innerWidth*g.config.density, g.config.height*g.config.density);
+    $(p.externals.canvas).width(window.innerWidth);
     $(p.externals.canvas).height(g.config.height);
 
     $.ajax(config.dataurl, {dataType:"html"})
@@ -98,11 +98,14 @@ function sketch(p) {
     p.width = g.config.width;
     p.height = g.config.height;
     w = p.width-200;
-    h = p.height;
+    h = p.height-20;
 
     drawPermissionLines();
 
+
     p.translate(150,0);
+
+    drawTimeTicks();
 
     p.stroke(0);
     p.strokeWeight(3);
@@ -186,8 +189,42 @@ function sketch(p) {
 
     var start = new Date(g.data.start);
     p.fill(0);
-    p.textAlign(p.CENTER);
-    p.text(start.toLocaleString(), 10, h-20, 130, 20);
+    p.textAlign(p.LEFT);
+    p.text(start.toLocaleString(), 5, p.height-15, 130, 20);
+  }
+
+  function drawTimeTicks() {
+   p.pushStyle();
+   p.textAlign(p.LEFT, p.BOTTOM);
+   p.strokeWeight(1);
+
+   var start = g.data.start;
+   var end = g.data.end;
+   var len = g.data.length;
+   var tick = 1000*60;
+   var firstminute = Math.ceil(start/(tick))*tick;
+   var offset = start - firstminute;
+   p.stroke(0);
+   p.line(0, p.height-20, 0, p.height);
+   p.stroke(50);
+   for (var i=firstminute; i<end; i+= tick) {
+    var minuteofhour = i / (1000 * 60);
+    var x = (i-start)/len*w;
+    var spaceUntilNextTick = x - (i-tick-start)/len*w;
+
+    if (minuteofhour % 5 == 0) {
+     p.line(x, p.height-15, x, p.height);
+     if (spaceUntilNextTick > 30) {
+      p.text(moment(i).format("h:mm"), x+2, p.height);
+     }
+    } else {
+     p.line(x, p.height-7, x, p.height);
+    }
+   }
+   p.stroke(0);
+
+   p.popStyle();
+
   }
 
   function drawForeground() {
