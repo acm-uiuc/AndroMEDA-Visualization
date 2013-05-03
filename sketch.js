@@ -26,6 +26,7 @@ function sketch(p) {
     g.font = p.createFont("Roboto-Light", 32);
     p.textFont(g.font);
     console.log("Setup");
+    g.config.width = window.innerWidth;
     p.size(window.innerWidth*g.config.density, g.config.height*g.config.density);
     $(p.externals.canvas).width(window.innerWidth);
     $(p.externals.canvas).height(g.config.height);
