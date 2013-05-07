@@ -137,6 +137,7 @@ function sketch(p) {
 
   var permissions = {
     "android.permission.READ_PHONE_STATE":                   { category: "info-l", severity: 1, placement: 1, display:"Read Phone State"},
+    "android.permission.READ_PROFILE":                       { category: "info-l", severity: 1, placement: 1, display:"Read Personal Profile"},
     "android.permission.GET_ACCOUNTS":                       { category: "info-l", severity: 1, placement: 2, display:"Get Account Info"},
     "android.permission.ACCESS_COARSE_LOCATION":             { category: "info-l", severity: 1, placement: 3, display:"Access Coarse Location"},
     "android.permission.RECEIVE_BOOT_COMPLETED":             { category: "info-l", severity: 1, placement: 3, display:"Start on Boot"},
@@ -148,6 +149,9 @@ function sketch(p) {
     "android.permission.RECORD_AUDIO":                       { category: "info-m", severity: 2, placement: 6, display:"Record Audio"},
     "android.permission.CAMERA":                             { category: "info-m", severity: 2, placement: 6, display:"Camera"},
     "android.permission.GET_TASKS":                          { category: "info-m", severity: 2, placement: 6, display:"Read Running Apps"},
+    "android.permission.READ_LOGS":                          { category: "info-m", severity: 2, placement: 6, display:"Read Sensitive Logs"},
+    "android.permission.SYSTEM_ALERT_WINDOW":                { category: "info-m", severity: 2, placement: 6, display:"Draw Over Other Apps"},
+    "android.permission.CALL_PHONE":                         { category: "info-m", severity: 2, placement: 6, display:"Call Phones"},
     "com.android.browser.permission.READ_HISTORY_BOOKMARKS": { category: "info-m", severity: 2, placement: 7, display:"Read Browser History"},
     "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Install Launcher Shortcut"},
     "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS":{ category: "info-h", severity: 3, placement: 9, display:"Write Browser History"},
