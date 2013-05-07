@@ -145,6 +145,8 @@ function sketch(p) {
     "android.permission.READ_CALENDAR":                      { category: "info-m", severity: 2, placement: 4, display:"Read Calendar"},
     "android.permission.READ_CALL_LOG":                      { category: "info-m", severity: 2, placement: 5, display:"Read Call Log"},
     "android.permission.READ_SMS":                           { category: "info-m", severity: 2, placement: 6, display:"Read SMS"},
+    "android.permission.RECORD_AUDIO":                       { category: "info-m", severity: 2, placement: 6, display:"Record Audio"},
+    "android.permission.CAMERA":                             { category: "info-m", severity: 2, placement: 6, display:"Camera"},
     "android.permission.GET_TASKS":                          { category: "info-m", severity: 2, placement: 6, display:"Read Running Apps"},
     "com.android.browser.permission.READ_HISTORY_BOOKMARKS": { category: "info-m", severity: 2, placement: 7, display:"Read Browser History"},
     "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Install Launcher Shortcut"},
