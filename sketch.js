@@ -266,9 +266,9 @@ function sketch(p) {
         p.pushStyle();
         p.noStroke();
         if (permissionStack.length == 0) {
-         p.fill(255,200,150,60);
+         p.fill(0,15);
         } else {
-         p.fill(255,200,150,20);
+         p.noFill();
         }
         p.rectMode(p.CORNERS);
         p.rect(todraw.x, 0, w, h);
