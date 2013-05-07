@@ -51,6 +51,11 @@ function sketch(p) {
     $("#download").click(function() {
       p.save();
     });
+    $(window).keypress(function(event) {
+        p.save();
+        event.preventDefault();
+        return false;
+    });
   };
 
   function workOnData(data) {
