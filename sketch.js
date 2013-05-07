@@ -153,7 +153,7 @@ function sketch(p) {
     "android.permission.SYSTEM_ALERT_WINDOW":                { category: "info-m", severity: 2, placement: 6, display:"Draw Over Other Apps"},
     "android.permission.CALL_PHONE":                         { category: "info-m", severity: 2, placement: 6, display:"Call Phones"},
     "com.android.browser.permission.READ_HISTORY_BOOKMARKS": { category: "info-m", severity: 2, placement: 7, display:"Read Browser History"},
-    "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Install Launcher Shortcut"},
+    "com.android.launcher.permission.INSTALL_SHORTCUT":      { category: "info-m", severity: 2, placement: 8, display:"Add Launcher Icons"},
     "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS":{ category: "info-h", severity: 3, placement: 9, display:"Write Browser History"},
     "android.permission.WRITE_CONTACTS":                     { category: "info-h", severity: 3, placement: 4, display:"Write Contacts"},
     "android.permission.WRITE_CALENDAR":                     { category: "info-h", severity: 3, placement: 4, display:"Write Calendar"},
