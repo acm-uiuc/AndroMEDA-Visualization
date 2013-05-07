@@ -251,9 +251,9 @@ function sketch(p) {
         p.pushStyle();
         p.noStroke();
         if (permissionStack.length == 0) {
-         p.fill(255,200,150,60);
+         p.fill(0,15);
         } else {
-         p.fill(255,200,150,20);
+         p.noFill();
         }
         p.rectMode(p.CORNERS);
         p.rect(todraw.x, 0, item_x, h);
@@ -288,9 +288,13 @@ function sketch(p) {
       if (permission.category == "info-l") {
         p.fill( 245, 184, 0, 84);
       } else if (permission.category == "info-m") {
+        //p.fill( 233, 100, 10, 84);
+        //p.fill( 245, 184, 0, 84);
         p.fill( 221, 17, 17, 84);
-      } else if (permission.category == "info-s") {
-        p.fill(210, 100, 80, 100);
+      } else if (permission.category == "info-h") {
+        //p.fill( 221, 17, 17, 84);
+        //p.fill( 153, 51, 204, 120);
+        p.fill( 153, 34, 187, 180);
       }
       if (item.resultOfCheck == -1) {
         p.noFill();
