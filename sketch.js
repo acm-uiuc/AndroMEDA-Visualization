@@ -310,9 +310,10 @@ function sketch(p) {
     } else if (item.permission == "internet.http.url" || item.permission == "internet.http.client") {
       p.stroke(0,84);
       p.stroke(17, 170, 221);
+      p.stroke(7, 170, 221, 100);
       p.strokeWeight(1);
       p.line(0,13,0,h-texttop-10);
-      p.stroke(7, 170, 221, 100);
+      //p.stroke(7, 170, 221, 100);
       p.line(0, h-texttop-10,0, h);
       p.noStroke();
       p.stroke(0);
@@ -321,6 +322,7 @@ function sketch(p) {
       //p.triangle(0, 0, 0, h*0.03, 10, h*0.03);
       p.noFill();
       p.stroke(17, 170, 221);
+      p.stroke(7, 170, 221, 100);
       p.strokeWeight(2);
       p.arc(0, 11, 18, 18, -p.HALF_PI-p.HALF_PI/2, -p.HALF_PI/2, p.OPEN);
       p.arc(0, 11, 13, 13, -p.HALF_PI-p.HALF_PI/2, -p.HALF_PI/2, p.OPEN);
